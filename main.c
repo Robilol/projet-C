@@ -7,7 +7,7 @@ int main()
     char *record,*line;
     int i=0,j=0;
     char* accountArray[20][10];
-    FILE *fstream = fopen("/home/robilol/Bureau/Projet \C/Bank/Account.csv","r");
+    FILE *fstream = fopen("../Bank/Account.csv","r");
     if(fstream == NULL)
     {
         printf("\n file opening failed ");
