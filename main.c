@@ -15,6 +15,7 @@ int main()
     }
     while((line=fgets(buffer,sizeof(buffer),fstream))!=NULL)
     {
+        j = 0;
         record = strtok(line,";");
         while(record != NULL)
         {
