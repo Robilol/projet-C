@@ -2,9 +2,100 @@
 #include <string.h>
 #include <stdlib.h>
 
+const char* getfield(char* line, int num)
+{
+    const char* tok;
+    for (tok = strtok(line, ";");
+         tok && *tok;
+         tok = strtok(NULL, ";\n"))
+    {
+        if (!--num)
+            return tok;
+    }
+    return NULL;
+}
+
+
+void read_csv(char *filename, int value) {
+    char end[50] = ".csv";
+    char path[50] = "../Bank/";
+    strcat(path, filename);
+    strcat(path, end);
+    FILE *fstream = fopen(path,"r");
+
+    if(fstream == NULL)
+    {
+        printf("\n file opening failed ");
+    }
+
+    char line[1024];
+    while (fgets(line, 1024, fstream))
+    {
+        char* tmp = strdup(line);
+        printf("%s\n", getfield(tmp, value));
+        free(tmp);
+    }
+
+    fclose(fstream);
+}
+
+void write_csv(char *filename, int value, char *textToWrite) {
+    FILE *fstream;
+    char end[50] = ".csv";
+    char path[50] = "../Bank/";
+    strcat(path, filename);
+    strcat(path, end);
+
+    switch (value) {
+        case 0:
+            fstream = fopen(path,"a");
+            break;
+        case 1:
+            fstream = fopen(path,"w");
+            break;
+        default:
+            break;
+    }
+
+    if(fstream == NULL)
+    {
+        printf("\n file opening failed ");
+    }
+
+    fputs(fstream, textToWrite);
+
+    fclose(fstream);
+}
+
+
 // CLIENT
 void client_add() {
+    char id[50];
+    char nom[50];
+    char prenom[50];
+    char role[50];
+    char tel[50];
 
+    char string[100];
+
+    printf("Id : ");
+    scanf("%s", id);
+
+    printf("Nom : ");
+    scanf("%s", nom);
+
+    printf("Prenom : ");
+    scanf("%s", prenom);
+
+    printf("Role : ");
+    scanf("%s", role);
+
+    printf("Tel : ");
+    scanf("%s", tel);
+
+    sprintf(string, "%s;%s;%s;%s;%s;", id, nom, prenom, role, tel);
+
+    write_csv("Account", 0, string);
 }
 
 void client_edit() {
@@ -133,7 +224,7 @@ int main()
                         client_edit();
                         break;
                     case 3:
-                        client_search();
+                        client_delete();
                         break;
                     case 4:
                         client_search();
@@ -206,30 +297,6 @@ int main()
                 break;
         }
     }
-
-    char buffer[1024] ;
-    char *record,*line;
-    int i=0,j=0;
-    char* accountArray[20][10];
-    FILE *fstream = fopen("../Bank/Account.csv","r");
-    if(fstream == NULL)
-    {
-        printf("\n file opening failed ");
-        return -1 ;
-    }
-    while((line=fgets(buffer,sizeof(buffer),fstream))!=NULL)
-    {
-        j = 0;
-        record = strtok(line,";");
-        while(record != NULL)
-        {
-            accountArray[i][j] = record ;
-            record = strtok(NULL,";");
-            j++;
-        }
-        i++ ;
-    }
-    fclose(fstream);
 
     return 0 ;
 }
