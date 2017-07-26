@@ -18,7 +18,7 @@ char* getfield(char* line, int num)
     return NULL;
 }
 
-void read_csv(char *filename, int value, char *textToWrite) {
+void read_csv(char *filename, int value) {
     char end[50] = ".csv";
     char path[50] = "../Bank/";
     strcat(path, filename);
@@ -201,7 +201,8 @@ void client_search() {
 void choose_client(int value) {
     char *res[1024];
     printf("Liste des clients : \n");
-    read_csv("Clients", 2, res);
+    read_csv("Clients", 2);
+
     printf("\n\n");
     int id;
     /* Modifier un client : */
@@ -214,7 +215,7 @@ void choose_client(int value) {
     else if (value == 2) {
         compte_new();
     }
-//    printf("%s", res[0]);
+
 }
 
 //OPERATION
@@ -307,16 +308,15 @@ int show_menu() {
 
 int main()
 {
-    /*
     int *p;
     int i;
 
     p = get_clients_id();
+    size_t taille = strlen(p);
 
-    for ( i = 0; i < 10; i++ ) {
+    for ( i = 0; i < taille; i++ ) {
         printf( "*(p + %d) : %d\n", i, *(p + i));
     }
-    */
 
     int running = 1;
     srand(time(NULL));
