@@ -20,8 +20,7 @@ char* getfield(char* line, int num)
     return NULL;
 }
 
-
-void read_csv(char *filename, int value, char* strings[]) {
+void read_csv(char *filename, int value, char *textToWrite) {
     char end[50] = ".csv";
     char path[50] = "../Bank/";
     strcat(path, filename);
@@ -39,7 +38,7 @@ void read_csv(char *filename, int value, char* strings[]) {
     {
         char* tmp = strdup(line);
         printf("%s\n", getfield(tmp, value));
-        strcpy(strings[i], getfield(tmp, value));
+        //strcpy(strings[i], getfield(tmp, value));
         i++;
         free(tmp);
     }
@@ -109,6 +108,55 @@ void compte_close() {
 }
 
 // CLIENT
+
+void clients_listing(){
+    char buffer[1024] ;
+    char *record,*line;
+    int i=0,j=0;
+    int mat[100][100];
+    FILE *fstream = fopen("../Bank/Clients.csv","r");
+    if(fstream == NULL)
+    {
+        printf("\n file opening failed ");
+        return;
+    }
+    printf(" - ");
+    while((line=fgets(buffer,sizeof(buffer),fstream))!=NULL)
+    {
+        record = strtok(line,";");
+        while(record != NULL)
+        {
+            printf("%s - ",record) ;
+            mat[i][j++] = atoi(record) ;
+            record = strtok(NULL,";");
+        }
+        ++i ;
+    }
+    printf("\n");
+    fclose(fstream);
+}
+
+int * get_clients_id(){
+    char buffer[1024] ;
+    char *record,*line;
+    int i=0;
+    static int r[1024];
+    FILE *fstream = fopen("../Bank/Clients.csv", "r");
+    if(fstream == NULL)
+    {
+        printf("\n file opening failed ");
+        return -1;
+    }
+    while((line=fgets(buffer,sizeof(buffer),fstream))!=NULL)
+    {
+        record = strtok(line,";");
+        r[i] = atoi(record) ;
+        ++i ;
+    }
+    fclose(fstream);
+    return r;
+}
+
 void client_add() {
     /* Génère un ID numérique de 4 chiffres : */
     int id = rand()%(9999-1000)+1;
@@ -132,13 +180,13 @@ void client_add() {
     printf("Tel : ");
     scanf("%s", tel);
 
-    sprintf(string, "%d;%s;%s;%s;%s;\n", id, nom, prenom, role, tel);
+    sprintf(string, "\n%d;%s;%s;%s;%s;", id, nom, prenom, role, tel);
 
     write_csv("Clients", 0, string);
 }
 
+int id = 2352;
 void client_edit() {
-
 }
 
 void client_delete() {
@@ -182,10 +230,11 @@ int menu_client() {
     int select;
 
     printf("~~~~~~~ MENU CLIENT ~~~~~~~\n");
-    printf("1 - Ajouter un client\n");
-    printf("2 - Modifier un client\n");
-    printf("3 - Supprimer un client\n");
-    printf("4 - Rechercher un client\n");
+    printf("1 - Listing des clients\n");
+    printf("2 - Ajouter un client\n");
+    printf("3 - Modifier un client\n");
+    printf("4 - Supprimer un client\n");
+    printf("5 - Rechercher un client\n");
     printf("0 - Quitter\n");
 
     scanf("%d", &select);
@@ -248,6 +297,17 @@ int show_menu() {
 
 int main()
 {
+    /*
+    int *p;
+    int i;
+
+    p = get_clients_id();
+
+    for ( i = 0; i < 10; i++ ) {
+        printf( "*(p + %d) : %d\n", i, *(p + i));
+    }
+    */
+
     int running = 1;
     srand(time(NULL));
 
@@ -256,15 +316,18 @@ int main()
             case 1:
                 switch (menu_client()) {
                     case 1:
-                        client_add();
+                        clients_listing();
                         break;
                     case 2:
-                        client_edit();
+                        client_add();
                         break;
                     case 3:
-                        client_delete();
+                        client_edit();
                         break;
                     case 4:
+                        client_delete();
+                        break;
+                    case 5:
                         client_search();
                         break;
                     case 0:
