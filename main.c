@@ -1,10 +1,15 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <time.h>
 
-const char* getfield(char* line, int num)
+#define BUF 128
+#define TOT 10
+
+
+char* getfield(char* line, int num)
 {
-    const char* tok;
+    char* tok;
     for (tok = strtok(line, ";");
          tok && *tok;
          tok = strtok(NULL, ";\n"))
@@ -16,7 +21,7 @@ const char* getfield(char* line, int num)
 }
 
 
-void read_csv(char *filename, int value) {
+void read_csv(char *filename, int value, char* strings[]) {
     char end[50] = ".csv";
     char path[50] = "../Bank/";
     strcat(path, filename);
@@ -28,11 +33,14 @@ void read_csv(char *filename, int value) {
         printf("\n file opening failed ");
     }
 
+    int i = 0;
     char line[1024];
     while (fgets(line, 1024, fstream))
     {
         char* tmp = strdup(line);
         printf("%s\n", getfield(tmp, value));
+        strcpy(strings[i], getfield(tmp, value));
+        i++;
         free(tmp);
     }
 
@@ -67,19 +75,50 @@ void write_csv(char *filename, int value, char *textToWrite) {
     fclose(fstream);
 }
 
+//COMPTE
+void compte_new() {
+    /* Génère un ID numérique de 4 chiffres : */
+    int id = rand()%(9999-1000)+1;
+
+    int id_proprietaire;
+    int solde;
+    int taux;
+
+    char string[100];
+
+    printf("ID proprietaire : ");
+    scanf("%d", &id_proprietaire);
+
+    printf("Solde : ");
+    scanf("%d", &solde);
+
+    printf("Taux : ");
+    scanf("%d", &taux);
+
+    sprintf(string, "%d;%d;%d;%d;\n", id, id_proprietaire, solde, taux);
+
+    write_csv("Accounts", 0, string);
+}
+
+void compte_show_solde() {
+
+}
+
+void compte_close() {
+
+}
 
 // CLIENT
 void client_add() {
-    char id[50];
+    /* Génère un ID numérique de 4 chiffres : */
+    int id = rand()%(9999-1000)+1;
+
     char nom[50];
     char prenom[50];
     char role[50];
     char tel[50];
 
     char string[100];
-
-    printf("Id : ");
-    scanf("%s", id);
 
     printf("Nom : ");
     scanf("%s", nom);
@@ -93,11 +132,9 @@ void client_add() {
     printf("Tel : ");
     scanf("%s", tel);
 
-    sprintf(string, "%s;%s;%s;%s;%s;", id, nom, prenom, role, tel);
+    sprintf(string, "%d;%s;%s;%s;%s;\n", id, nom, prenom, role, tel);
 
-    printf("\nstring: %s", string);
-
-    write_csv("Account", 0, string);
+    write_csv("Clients", 0, string);
 }
 
 void client_edit() {
@@ -112,17 +149,15 @@ void client_search() {
 
 }
 
-//COMPTE
-void compte_new() {
-
-}
-
-void compte_show_solde() {
-
-}
-
-void compte_close() {
-
+void choose_client() {
+    char *res[1024];
+    read_csv("Clients", 2, res);
+    printf("%s", res[0]);
+    int i = 0;
+    for (i = 0; i < 10; i++) {
+        printf("%s", res[i]);
+    }
+    compte_new();
 }
 
 //OPERATION
@@ -214,6 +249,7 @@ int show_menu() {
 int main()
 {
     int running = 1;
+    srand(time(NULL));
 
     while (running) {
         switch (show_menu()) {
@@ -232,6 +268,7 @@ int main()
                         client_search();
                         break;
                     case 0:
+                        running = 0;
                         break;
                     default:
                         break;
@@ -240,7 +277,7 @@ int main()
             case 2:
                 switch (menu_compte()) {
                     case 1:
-                        compte_new();
+                        choose_client();
                         break;
                     case 2:
                         compte_show_solde();
@@ -249,6 +286,7 @@ int main()
                         compte_close();
                         break;
                     case 0:
+                        running = 0;
                         break;
                     default:
                         break;
@@ -266,6 +304,7 @@ int main()
                         operation_virement();
                         break;
                     case 0:
+                        running = 0;
                         break;
                     default:
                         break;
