@@ -75,6 +75,34 @@ void write_csv(char *filename, int value, char *textToWrite) {
 }
 
 //COMPTE
+void comptes_listing(){
+    char buffer[1024] ;
+    char *record,*line;
+    int i=0,j=0;
+    int mat[100][100];
+    FILE *fstream = fopen("../Bank/Accounts.csv","r");
+    if(fstream == NULL)
+    {
+        printf("\n file opening failed ");
+        return;
+    }
+    printf(" ID Compte - ID client - Solde - Taux \n");
+    printf(" - ");
+    while((line=fgets(buffer,sizeof(buffer),fstream))!=NULL)
+    {
+        record = strtok(line,";");
+        while(record != NULL)
+        {
+            printf("%s - ",record) ;
+            mat[i][j++] = atoi(record) ;
+            record = strtok(NULL,";");
+        }
+        ++i ;
+    }
+    printf("\n");
+    fclose(fstream);
+}
+
 void compte_new() {
     /* Génère un ID numérique de 4 chiffres : */
     int id = rand()%(9999-1000)+1;
@@ -120,6 +148,7 @@ void clients_listing(){
         printf("\n file opening failed ");
         return;
     }
+    printf(" ID - Nom - Prenom - Role - Tel \n");
     printf(" - ");
     while((line=fgets(buffer,sizeof(buffer),fstream))!=NULL)
     {
@@ -255,9 +284,10 @@ int menu_compte() {
     int select;
 
     printf("~~~~~~~ MENU COMPTE ~~~~~~~\n");
-    printf("1 - Nouveau compte\n");
-    printf("2 - Consultation solde\n");
-    printf("3 - Fermer un compte\n");
+    printf("1 - Listing comptes\n");
+    printf("2 - Nouveau compte\n");
+    printf("3 - Consultation solde\n");
+    printf("4 - Fermer un compte\n");
     printf("0 - Retour\n");
 
     scanf("%d", &select);
@@ -349,12 +379,15 @@ int main()
             case 2:
                 switch (menu_compte()) {
                     case 1:
-                        choose_client(2);
+                        comptes_listing();
                         break;
                     case 2:
-                        compte_show_solde();
+                        choose_client(2);
                         break;
                     case 3:
+                        compte_show_solde();
+                        break;
+                    case 4:
                         compte_close();
                         break;
                     case 0:
