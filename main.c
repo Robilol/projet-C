@@ -18,7 +18,28 @@ char* getfield(char* line, int num)
     return NULL;
 }
 
-void read_csv(char *filename, int value, char *textToWrite) {
+int * get_clients_id(){
+    char buffer[1024] ;
+    char *record,*line;
+    int i=0;
+    static int r[1024];
+    FILE *fstream = fopen("../Bank/Clients.csv", "r");
+    if(fstream == NULL)
+    {
+        printf("\n file opening failed ");
+        return -1;
+    }
+    while((line=fgets(buffer,sizeof(buffer),fstream))!=NULL)
+    {
+        record = strtok(line,";");
+        r[i] = atoi(record) ;
+        ++i ;
+    }
+    fclose(fstream);
+    return r;
+}
+
+void read_csv(char *filename, int value) {
     char end[50] = ".csv";
     char path[50] = "../Bank/";
     strcat(path, filename);
@@ -113,8 +134,21 @@ void compte_new() {
 
     char string[100];
 
-    printf("ID proprietaire : ");
-    scanf("%d", &id_proprietaire);
+    int *p;
+    int i;
+    int id_found = 0;
+    p = get_clients_id();
+
+    do {
+        printf("ID proprietaire : ");
+        scanf("%d", &id_proprietaire);
+        for ( i = 0; i < 1024; i++ ) {
+            if (*(p + i) == 0) break;
+            if (*(p + i) == id_proprietaire) id_found = 1;
+//            printf( "*(p + %d) : %d\n", i, *(p + i));
+        }
+    } while (!id_found);
+
 
     printf("Solde : ");
     scanf("%d", &solde);
@@ -165,26 +199,6 @@ void clients_listing(){
     fclose(fstream);
 }
 
-int * get_clients_id(){
-    char buffer[1024] ;
-    char *record,*line;
-    int i=0;
-    static int r[1024];
-    FILE *fstream = fopen("../Bank/Clients.csv", "r");
-    if(fstream == NULL)
-    {
-        printf("\n file opening failed ");
-        return -1;
-    }
-    while((line=fgets(buffer,sizeof(buffer),fstream))!=NULL)
-    {
-        record = strtok(line,";");
-        r[i] = atoi(record) ;
-        ++i ;
-    }
-    fclose(fstream);
-    return r;
-}
 
 void client_add() {
     /* Génère un ID numérique de 4 chiffres : */
@@ -230,7 +244,8 @@ void client_search() {
 void choose_client(int value) {
     char *res[1024];
     printf("Liste des clients : \n");
-    read_csv("Clients", 2, res);
+    read_csv("Clients", 2);
+
     printf("\n\n");
     int id;
     /* Modifier un client : */
@@ -243,7 +258,7 @@ void choose_client(int value) {
     else if (value == 2) {
         compte_new();
     }
-//    printf("%s", res[0]);
+
 }
 
 //OPERATION
@@ -341,16 +356,15 @@ void search_client(){
 
 int main()
 {
-    /*
     int *p;
     int i;
 
     p = get_clients_id();
 
-    for ( i = 0; i < 10; i++ ) {
+    for ( i = 0; i < 1024; i++ ) {
+        if (*(p + i) == 0) break;
         printf( "*(p + %d) : %d\n", i, *(p + i));
     }
-    */
 
     int running = 1;
     srand(time(NULL));
