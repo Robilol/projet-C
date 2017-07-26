@@ -3,9 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#define BUF 128
-#define TOT 10
-
+char client_ids[1024][4];
 
 char* getfield(char* line, int num)
 {
@@ -37,8 +35,10 @@ void read_csv(char *filename, int value, char *textToWrite) {
     while (fgets(line, 1024, fstream))
     {
         char* tmp = strdup(line);
-        printf("%s\n", getfield(tmp, value));
-        //strcpy(strings[i], getfield(tmp, value));
+//        printf("%s\n", getfield(tmp, value));
+
+        printf("%s", line);
+
         i++;
         free(tmp);
     }
@@ -75,6 +75,34 @@ void write_csv(char *filename, int value, char *textToWrite) {
 }
 
 //COMPTE
+void comptes_listing(){
+    char buffer[1024] ;
+    char *record,*line;
+    int i=0,j=0;
+    int mat[100][100];
+    FILE *fstream = fopen("../Bank/Accounts.csv","r");
+    if(fstream == NULL)
+    {
+        printf("\n file opening failed ");
+        return;
+    }
+    printf(" ID Compte - ID client - Solde - Taux \n");
+    printf(" - ");
+    while((line=fgets(buffer,sizeof(buffer),fstream))!=NULL)
+    {
+        record = strtok(line,";");
+        while(record != NULL)
+        {
+            printf("%s - ",record) ;
+            mat[i][j++] = atoi(record) ;
+            record = strtok(NULL,";");
+        }
+        ++i ;
+    }
+    printf("\n");
+    fclose(fstream);
+}
+
 void compte_new() {
     /* Génère un ID numérique de 4 chiffres : */
     int id = rand()%(9999-1000)+1;
@@ -120,6 +148,7 @@ void clients_listing(){
         printf("\n file opening failed ");
         return;
     }
+    printf(" ID - Nom - Prenom - Role - Tel \n");
     printf(" - ");
     while((line=fgets(buffer,sizeof(buffer),fstream))!=NULL)
     {
@@ -185,8 +214,9 @@ void client_add() {
     write_csv("Clients", 0, string);
 }
 
-int id = 2352;
-void client_edit() {
+
+void client_edit(int id) {
+
 }
 
 void client_delete() {
@@ -197,15 +227,23 @@ void client_search() {
 
 }
 
-void choose_client() {
+void choose_client(int value) {
     char *res[1024];
+    printf("Liste des clients : \n");
     read_csv("Clients", 2, res);
-    printf("%s", res[0]);
-    int i = 0;
-    for (i = 0; i < 10; i++) {
-        printf("%s", res[i]);
+    printf("\n\n");
+    int id;
+    /* Modifier un client : */
+    if (value == 1) {
+        printf("\nTaper l'ID du client à modifier : ");
+        scanf("%d", &id);
+        client_edit(id);
     }
-    compte_new();
+    /* Créer un compte : */
+    else if (value == 2) {
+        compte_new();
+    }
+//    printf("%s", res[0]);
 }
 
 //OPERATION
@@ -230,12 +268,13 @@ int menu_client() {
     int select;
 
     printf("~~~~~~~ MENU CLIENT ~~~~~~~\n");
+
     printf("1 - Listing des clients\n");
     printf("2 - Ajouter un client\n");
     printf("3 - Modifier un client\n");
     printf("4 - Supprimer un client\n");
     printf("5 - Rechercher un client\n");
-    printf("0 - Quitter\n");
+    printf("0 - Retour\n");
 
     scanf("%d", &select);
     return select;
@@ -245,10 +284,11 @@ int menu_compte() {
     int select;
 
     printf("~~~~~~~ MENU COMPTE ~~~~~~~\n");
-    printf("1 - Nouveau compte\n");
-    printf("2 - Consultation solde\n");
-    printf("3 - Fermer un compte\n");
-    printf("0 - Quitter\n");
+    printf("1 - Listing comptes\n");
+    printf("2 - Nouveau compte\n");
+    printf("3 - Consultation solde\n");
+    printf("4 - Fermer un compte\n");
+    printf("0 - Retour\n");
 
     scanf("%d", &select);
     return select;
@@ -261,7 +301,7 @@ int menu_operation() {
     printf("1 - Depot\n");
     printf("2 - Retrait\n");
     printf("3 - Virement\n");
-    printf("0 - Quitter\n");
+    printf("0 - Retour\n");
 
     scanf("%d", &select);
     return select;
@@ -274,7 +314,7 @@ int menu_admin() {
     printf("1 - Depot\n");
     printf("2 - Retrait\n");
     printf("3 - Virement\n");
-    printf("0 - Quitter\n");
+    printf("0 - Retour\n");
 
     scanf("%d", &select);
     return select;
@@ -326,7 +366,7 @@ int main()
                         client_add();
                         break;
                     case 3:
-                        client_edit();
+                        choose_client(1);
                         break;
                     case 4:
                         client_delete();
@@ -335,7 +375,6 @@ int main()
                         client_search();
                         break;
                     case 0:
-                        running = 0;
                         break;
                     default:
                         break;
@@ -344,16 +383,18 @@ int main()
             case 2:
                 switch (menu_compte()) {
                     case 1:
-                        choose_client();
+                        comptes_listing();
                         break;
                     case 2:
-                        compte_show_solde();
+                        choose_client(2);
                         break;
                     case 3:
+                        compte_show_solde();
+                        break;
+                    case 4:
                         compte_close();
                         break;
                     case 0:
-                        running = 0;
                         break;
                     default:
                         break;
@@ -371,7 +412,6 @@ int main()
                         operation_virement();
                         break;
                     case 0:
-                        running = 0;
                         break;
                     default:
                         break;
@@ -392,7 +432,6 @@ int main()
                         operation_virement();
                         break;
                     case 0:
-                        running = 0;
                         break;
                     default:
                         break;
