@@ -230,7 +230,43 @@ void client_add() {
 
 
 void client_edit(int id) {
+    int id_client;
+    int *p;
+    int i;
+    int id_found = 0;
+    p = get_clients_id();
 
+    do {
+        printf("ID proprietaire : ");
+        scanf("%d", &id_client);
+        for ( i = 0; i < 1024; i++ ) {
+            if (*(p + i) == 0) break;
+            if (*(p + i) == id_client) id_found = 1;
+        }
+    } while (!id_found);
+
+    char nom[50];
+    char prenom[50];
+    char role[50];
+    char tel[50];
+
+    char string[100];
+
+    printf("Nom : ");
+    scanf("%s", nom);
+
+    printf("Prenom : ");
+    scanf("%s", prenom);
+
+    printf("Role : ");
+    scanf("%s", role);
+
+    printf("Tel : ");
+    scanf("%s", tel);
+
+    sprintf(string, "\n%d;%s;%s;%s;%s;", id, nom, prenom, role, tel);
+
+    write_csv("Clients", 0, string);
 }
 
 void client_delete() {
@@ -352,7 +388,7 @@ int show_menu() {
 
 int main()
 {
-    int *p;
+    /*int *p;
     int i;
 
     p = get_clients_id();
@@ -360,7 +396,7 @@ int main()
     for ( i = 0; i < 1024; i++ ) {
         if (*(p + i) == 0) break;
         printf( "*(p + %d) : %d\n", i, *(p + i));
-    }
+    }*/
 
     int running = 1;
     srand(time(NULL));
