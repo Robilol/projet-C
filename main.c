@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <time.h>
+int system(const char *command);
 
 char client_ids[1024][4];
 
@@ -234,7 +235,14 @@ void client_edit(int id) {
 }
 
 void client_delete() {
-
+    int id;
+    printf("Id du client à delete");
+    scanf("%d", &id);
+    char string[100];
+    sprintf(string, "sed -e '/%d/g' /Users/Mawel/Code/projet-C/Bank/Clients.csv > temp_file123.txt",id);
+    system(string);
+    system("rm /Users/Mawel/Code/projet-C/Bank/Clients.csv ");
+    system("mv temp_file123.txt /Users/Mawel/Code/projet-C/Bank/Clients.csv ");
 }
 
 void client_search() {
@@ -350,21 +358,8 @@ int show_menu() {
     return select;
 }
 
-void search_client(){
-    
-}
-
 int main()
 {
-    int *p;
-    int i;
-
-    p = get_clients_id();
-
-    for ( i = 0; i < 1024; i++ ) {
-        if (*(p + i) == 0) break;
-        printf( "*(p + %d) : %d\n", i, *(p + i));
-    }
 
     int running = 1;
     srand(time(NULL));
