@@ -295,6 +295,10 @@ int show_menu() {
     return select;
 }
 
+void search_client(){
+    
+}
+
 int main()
 {
     /*
