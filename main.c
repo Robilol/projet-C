@@ -167,7 +167,14 @@ void compte_show_solde() {
 }
 
 void compte_close() {
-
+    int id;
+    printf("Id du compte à fermer : ");
+    scanf("%d", &id);
+    char string[100];
+    sprintf(string, "sed -e '/%d/g' /Users/Mawel/Code/projet-C/Bank/Accounts.csv > temp_file123.txt",id);
+    system(string);
+    system("rm /Users/Mawel/Code/projet-C/Bank/Accounts.csv ");
+    system("mv temp_file123.txt /Users/Mawel/Code/projet-C/Bank/Accounts.csv ");
 }
 
 // CLIENT
@@ -201,16 +208,19 @@ void clients_listing(){
 }
 
 
-void client_add() {
-    /* Génère un ID numérique de 4 chiffres : */
-    int id = rand()%(9999-1000)+1;
-
+void client_add(int id) {
     char nom[50];
     char prenom[50];
     char role[50];
     char tel[50];
 
     char string[100];
+
+    if (id == 0) {
+        /* Génère un ID numérique de 4 chiffres : */
+        id = rand()%(9999-1000)+1;
+    }
+
 
     printf("Nom : ");
     scanf("%s", nom);
@@ -229,56 +239,29 @@ void client_add() {
     write_csv("Clients", 0, string);
 }
 
-
-void client_edit(int id) {
-    int id_client;
-    int *p;
-    int i;
-    int id_found = 0;
-    p = get_clients_id();
-
-    do {
-        printf("ID proprietaire : ");
-        scanf("%d", &id_client);
-        for ( i = 0; i < 1024; i++ ) {
-            if (*(p + i) == 0) break;
-            if (*(p + i) == id_client) id_found = 1;
-        }
-    } while (!id_found);
-
-    char nom[50];
-    char prenom[50];
-    char role[50];
-    char tel[50];
-
-    char string[100];
-
-    printf("Nom : ");
-    scanf("%s", nom);
-
-    printf("Prenom : ");
-    scanf("%s", prenom);
-
-    printf("Role : ");
-    scanf("%s", role);
-
-    printf("Tel : ");
-    scanf("%s", tel);
-
-    sprintf(string, "\n%d;%s;%s;%s;%s;", id, nom, prenom, role, tel);
-
-    write_csv("Clients", 0, string);
-}
 
 void client_delete() {
     int id;
-    printf("Id du client à delete");
+    printf("Id du client à delete : ");
     scanf("%d", &id);
     char string[100];
     sprintf(string, "sed -e '/%d/g' /Users/Mawel/Code/projet-C/Bank/Clients.csv > temp_file123.txt",id);
     system(string);
     system("rm /Users/Mawel/Code/projet-C/Bank/Clients.csv ");
     system("mv temp_file123.txt /Users/Mawel/Code/projet-C/Bank/Clients.csv ");
+}
+
+void client_edit() {
+    int id;
+    printf("Id du client à editer : ");
+    scanf("%d", &id);
+    char string[100];
+    sprintf(string, "sed -e '/%d/g' /Users/Mawel/Code/projet-C/Bank/Clients.csv > temp_file123.txt",id);
+    system(string);
+    system("rm /Users/Mawel/Code/projet-C/Bank/Clients.csv ");
+    system("mv temp_file123.txt /Users/Mawel/Code/projet-C/Bank/Clients.csv ");
+
+    client_add(id);
 }
 
 void client_search() {
@@ -298,7 +281,7 @@ void choose_client(int value) {
         scanf("%d", &id);
         client_edit(id);
     }
-    /* Créer un compte : */
+        /* Créer un compte : */
     else if (value == 2) {
         compte_new();
     }
@@ -406,7 +389,7 @@ int main()
         if (*(p + i) == 0) break;
         printf( "*(p + %d) : %d\n", i, *(p + i));
     }*/
-    
+
     int running = 1;
     srand(time(NULL));
 
@@ -418,10 +401,10 @@ int main()
                         clients_listing();
                         break;
                     case 2:
-                        client_add();
+                        client_add(0);
                         break;
                     case 3:
-                        choose_client(1);
+                        client_edit();
                         break;
                     case 4:
                         client_delete();
