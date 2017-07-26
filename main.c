@@ -18,6 +18,27 @@ char* getfield(char* line, int num)
     return NULL;
 }
 
+int * get_clients_id(){
+    char buffer[1024] ;
+    char *record,*line;
+    int i=0;
+    static int r[1024];
+    FILE *fstream = fopen("../Bank/Clients.csv", "r");
+    if(fstream == NULL)
+    {
+        printf("\n file opening failed ");
+        return -1;
+    }
+    while((line=fgets(buffer,sizeof(buffer),fstream))!=NULL)
+    {
+        record = strtok(line,";");
+        r[i] = atoi(record) ;
+        ++i ;
+    }
+    fclose(fstream);
+    return r;
+}
+
 void read_csv(char *filename, int value) {
     char end[50] = ".csv";
     char path[50] = "../Bank/";
@@ -113,8 +134,21 @@ void compte_new() {
 
     char string[100];
 
-    printf("ID proprietaire : ");
-    scanf("%d", &id_proprietaire);
+    int *p;
+    int i;
+    int id_found = 0;
+    p = get_clients_id();
+
+    do {
+        printf("ID proprietaire : ");
+        scanf("%d", &id_proprietaire);
+        for ( i = 0; i < 1024; i++ ) {
+            if (*(p + i) == 0) break;
+            if (*(p + i) == id_proprietaire) id_found = 1;
+//            printf( "*(p + %d) : %d\n", i, *(p + i));
+        }
+    } while (!id_found);
+
 
     printf("Solde : ");
     scanf("%d", &solde);
@@ -165,26 +199,6 @@ void clients_listing(){
     fclose(fstream);
 }
 
-int * get_clients_id(){
-    char buffer[1024] ;
-    char *record,*line;
-    int i=0;
-    static int r[1024];
-    FILE *fstream = fopen("../Bank/Clients.csv", "r");
-    if(fstream == NULL)
-    {
-        printf("\n file opening failed ");
-        return -1;
-    }
-    while((line=fgets(buffer,sizeof(buffer),fstream))!=NULL)
-    {
-        record = strtok(line,";");
-        r[i] = atoi(record) ;
-        ++i ;
-    }
-    fclose(fstream);
-    return r;
-}
 
 void client_add() {
     /* Génère un ID numérique de 4 chiffres : */
@@ -342,9 +356,9 @@ int main()
     int i;
 
     p = get_clients_id();
-    size_t taille = strlen(p);
 
-    for ( i = 0; i < taille; i++ ) {
+    for ( i = 0; i < 1024; i++ ) {
+        if (*(p + i) == 0) break;
         printf( "*(p + %d) : %d\n", i, *(p + i));
     }
 
